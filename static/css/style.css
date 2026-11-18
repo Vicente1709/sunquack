@@ -1,0 +1,90 @@
+:root {
+  --orange: #ff7a1a;
+  --orange-soft: #ff9d4d;
+  --ember: #8a3300;
+  --black: #000;
+  --beat: 1.6s;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  color: #fff3e8;
+  background: radial-gradient(ellipse at center, #d9600f 0%, var(--ember) 28%, #1a0800 58%, var(--black) 85%);
+  background-attachment: fixed;
+  overflow: hidden;
+}
+
+/* Batimento: duas pulsações rápidas e uma pausa */
+@keyframes heartbeat {
+  0%, 100% { box-shadow: 0 0 6px 0 rgba(255,122,26,.25); text-shadow: 0 0 6px rgba(255,122,26,.3); }
+  14%      { box-shadow: 0 0 22px 4px rgba(255,122,26,.85); text-shadow: 0 0 26px rgba(255,157,77,.95); }
+  28%      { box-shadow: 0 0 10px 1px rgba(255,122,26,.4); text-shadow: 0 0 10px rgba(255,122,26,.5); }
+  42%      { box-shadow: 0 0 28px 6px rgba(255,122,26,.95); text-shadow: 0 0 34px rgba(255,157,77,1); }
+  70%      { box-shadow: 0 0 6px 0 rgba(255,122,26,.25); text-shadow: 0 0 6px rgba(255,122,26,.3); }
+}
+
+.topbar {
+  position: fixed; top: 0; right: 0; z-index: 5;
+  display: flex; gap: .75rem; align-items: center; padding: 1.25rem 1.75rem;
+}
+.who { color: var(--orange-soft); margin-right: .5rem; }
+.btn {
+  font: 500 .95rem "Inter", sans-serif; color: var(--orange-soft);
+  background: rgba(0,0,0,.35); border: 1px solid var(--orange); border-radius: 999px;
+  padding: .55rem 1.35rem; cursor: pointer; animation: heartbeat var(--beat) ease-in-out infinite;
+  transition: transform .2s, background .2s;
+}
+.btn:hover { transform: translateY(-1px); background: rgba(255,122,26,.2); }
+.btn-solid { background: var(--orange); color: #1a0800; }
+.btn-solid:hover { background: var(--orange-soft); }
+.btn:focus-visible, input:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+.hero {
+  height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; padding: 1rem;
+}
+.brand {
+  font: 600 clamp(3.2rem, 11vw, 8rem)/1 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: .04em; margin: 0; color: #fff3e8;
+  animation: heartbeat var(--beat) ease-in-out infinite;
+}
+.section-title {
+  font: 500 clamp(1.1rem, 2.6vw, 1.6rem) "Cormorant Garamond", Georgia, serif;
+  letter-spacing: .12em; margin: 1.4rem 0 0; color: var(--orange-soft);
+  animation: heartbeat var(--beat) ease-in-out infinite; animation-delay: .1s;
+}
+
+/* Abertura: o sol nasce e a cena se revela */
+.intro {
+  position: fixed; inset: 0; z-index: 10; background: #000; display: grid; place-items: center;
+  animation: introOut 1s ease 1.9s forwards;
+}
+.sun {
+  width: 12px; height: 12px; border-radius: 50%; background: var(--orange);
+  box-shadow: 0 0 60px 20px rgba(255,122,26,.8);
+  animation: rise 1.9s cubic-bezier(.2,.7,.2,1) forwards;
+}
+@keyframes rise { to { transform: scale(60); opacity: 0; } }
+@keyframes introOut { to { opacity: 0; visibility: hidden; } }
+.hero { animation: reveal 1.2s ease 1.4s both; }
+.topbar { animation: reveal 1.2s ease 1.4s both; }
+@keyframes reveal { from { opacity: 0; filter: blur(8px); } to { opacity: 1; filter: none; } }
+
+dialog {
+  border: 1px solid var(--orange); border-radius: 18px; padding: 1.75rem;
+  background: rgba(15,6,0,.94); color: #fff3e8; width: min(92vw, 380px);
+}
+dialog::backdrop { background: rgba(0,0,0,.65); backdrop-filter: blur(4px); }
+dialog h3 { font: 600 1.7rem "Cormorant Garamond", Georgia, serif; margin: 0 0 1rem; }
+label { display: block; font-size: .85rem; margin-bottom: .9rem; color: var(--orange-soft); }
+input {
+  display: block; width: 100%; margin-top: .3rem; padding: .65rem .8rem; font: inherit;
+  color: #fff; background: #000; border: 1px solid #5a2a0a; border-radius: 10px;
+}
+.msg { min-height: 1.2rem; color: #ffb27a; font-size: .85rem; margin: 0 0 .5rem; }
+.actions { display: flex; justify-content: flex-end; gap: .6rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }
+}

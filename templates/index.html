@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>SunQuack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="intro" id="intro" aria-hidden="true"><div class="sun"></div></div>
+
+  <header class="topbar">
+    <span id="who" class="who" hidden></span>
+    <button class="btn" id="btn-login" data-open="dlg-login">Login</button>
+    <button class="btn btn-solid" id="btn-signin" data-open="dlg-signin">Sign In</button>
+    <button class="btn" id="btn-logout" hidden>Sair</button>
+  </header>
+
+  <main class="hero">
+    <h1 class="brand">SunQuack</h1>
+    <h2 class="section-title">Games &amp; Systems</h2>
+  </main>
+
+  <dialog id="dlg-login">
+    <form data-api="/api/login" autocomplete="on">
+      <h3>Login</h3>
+      <label>Usuário ou e-mail
+        <input name="identifier" required maxlength="254" autocomplete="username"></label>
+      <label>Senha
+        <input name="password" type="password" required maxlength="72" autocomplete="current-password"></label>
+      <p class="msg" role="alert"></p>
+      <div class="actions"><button type="button" class="btn" data-close>Cancelar</button>
+      <button class="btn btn-solid">Entrar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-signin">
+    <form data-api="/api/register" autocomplete="on">
+      <h3>Criar conta</h3>
+      <label>Usuário
+        <input name="username" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" autocomplete="username"></label>
+      <label>E-mail
+        <input name="email" type="email" required maxlength="254" autocomplete="email"></label>
+      <label>Senha (8 a 72 caracteres)
+        <input name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password"></label>
+      <p class="msg" role="alert"></p>
+      <div class="actions"><button type="button" class="btn" data-close>Cancelar</button>
+      <button class="btn btn-solid">Cadastrar</button></div>
+    </form>
+  </dialog>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
