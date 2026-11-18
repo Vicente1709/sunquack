@@ -4,28 +4,73 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>SunQuack</title>
+  <title>sunquack</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  <div class="intro" id="intro" aria-hidden="true"><div class="sun"></div></div>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="intro" aria-hidden="true"><div class="sun"></div></div>
 
-  <header class="topbar">
-    <span id="who" class="who" hidden></span>
-    <button class="btn" id="btn-login" data-open="dlg-login">Login</button>
-    <button class="btn btn-solid" id="btn-signin" data-open="dlg-signin">Sign In</button>
-    <button class="btn" id="btn-logout" hidden>Sair</button>
-  </header>
+  <div id="page">
+    <header class="topbar">
+      <div class="brand-row enter e1">
+        <img class="logo" src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo sunquack">
+        <h1 class="brand">sunquack</h1>
+      </div>
+      <div class="auth enter e1">
+        <span id="who" class="who" hidden></span>
+        <button class="btn" id="btn-sound" aria-pressed="true">Som ligado</button>
+        <button class="btn" id="btn-login" data-open="dlg-login">Login</button>
+        <button class="btn btn-solid" id="btn-signin" data-open="dlg-signin">Sign In</button>
+        <button class="btn" id="btn-logout" hidden>Sair</button>
+      </div>
+    </header>
 
-  <main class="hero">
-    <h1 class="brand">SunQuack</h1>
-    <h2 class="section-title">Games &amp; Systems</h2>
-  </main>
+    <main class="hero">
+      <button class="rocker enter e2" id="gs-switch" role="switch" aria-checked="false" aria-controls="gs-panel">
+        <span class="bezel">
+          <span class="glow"></span>
+          <span class="cap"><span class="mark mark-on"></span><span class="mark mark-off"></span></span>
+        </span>
+        <span class="rocker-label">Games &amp; Systems</span>
+      </button>
 
-  <dialog id="dlg-login">
+      <div class="panel" id="gs-panel" inert>
+        <div class="panel-inner glass">
+          <section>
+            <h3>Jogos</h3>
+            <button class="card" id="card-duck">
+              <img src="{{ url_for('static', filename='img/duck-cover.svg') }}" alt="">
+              <span class="card-title">Yellow Duck River Run</span>
+            </button>
+          </section>
+          <section>
+            <h3>Sistemas</h3>
+            <div class="card card-soon"><span class="card-title">Em breve</span></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="game-screen" id="game-screen" role="dialog" aria-modal="true" aria-label="Yellow Duck River Run" hidden>
+    <canvas id="game" width="960" height="540"></canvas>
+    <img class="cover-bg" id="cover-bg" src="{{ url_for('static', filename='img/duck-cover.svg') }}" alt="">
+    <button class="btn close snd" id="game-sound" aria-pressed="true">Som ligado</button>
+    <button class="btn close" id="game-close">Fechar</button>
+    <div class="over glass" id="game-over" hidden>
+      <h3>Fim de jogo</h3>
+      <p>Pontos: <strong id="go-score">0</strong></p>
+      <p>Recorde: <strong id="go-best">0</strong></p>
+      <button class="btn btn-solid" id="go-restart">Jogar de novo</button>
+    </div>
+  </div>
+
+  <dialog id="dlg-login" class="glass">
     <form data-api="/api/login" autocomplete="on">
       <h3>Login</h3>
       <label>Usuário ou e-mail
@@ -38,7 +83,7 @@
     </form>
   </dialog>
 
-  <dialog id="dlg-signin">
+  <dialog id="dlg-signin" class="glass">
     <form data-api="/api/register" autocomplete="on">
       <h3>Criar conta</h3>
       <label>Usuário
@@ -53,6 +98,8 @@
     </form>
   </dialog>
 
+  <script src="{{ url_for('static', filename='js/sfx.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

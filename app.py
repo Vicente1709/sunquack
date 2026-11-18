@@ -1,5 +1,6 @@
 import os
 import re
+import secrets
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, session
@@ -10,11 +11,13 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import User, db
+from models import Score, User, db
 
 load_dotenv()
 
 USERNAME_RE = re.compile(r"^[A-Za-z0-9_]{3,20}$")
+GAMES = {"duck"}
+MAX_SCORE = 1_000_000
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,189}\.[^@\s]{2,}$")
 
 
@@ -134,6 +137,48 @@ def create_app():
     @app.errorhandler(429)
     def too_many(_):
         return err("Muitas tentativas. Aguarde um minuto.", 429)
+
+    def score_owner():
+        """Filtro do dono do recorde: usuário logado ou sessão anônima."""
+        uid = session.get("uid")
+        if uid:
+            return {"user_id": uid}
+        sid = session.get("sid")
+        if not sid:
+            sid = session["sid"] = secrets.token_hex(16)
+        return {"session_key": sid}
+
+    @app.get("/api/score/<game>")
+    def get_score(game):
+        if game not in GAMES:
+            return err("Jogo inválido.", 404)
+        row = Score.query.filter_by(game=game, **score_owner()).first()
+        return jsonify(ok=True, best=row.best if row else 0)
+
+    @app.post("/api/score")
+    @limiter.limit("30/minute")
+    def post_score():
+        data = request.get_json(silent=True) or {}
+        game, score = data.get("game"), data.get("score")
+        if game not in GAMES:
+            return err("Jogo inválido.")
+        if isinstance(score, bool) or not isinstance(score, int) or not 0 <= score <= MAX_SCORE:
+            return err("Pontuação inválida.")
+
+        owner = score_owner()
+        for _ in range(2):  # 2ª tentativa cobre corrida na criação do registro
+            row = Score.query.filter_by(game=game, **owner).first()
+            if row is None:
+                row = Score(game=game, best=score, **owner)
+                db.session.add(row)
+            elif score > row.best:
+                row.best = score
+            try:
+                db.session.commit()
+                return jsonify(ok=True, best=row.best)
+            except IntegrityError:
+                db.session.rollback()
+        return err("Não foi possível salvar.", 500)
 
     return app
 
