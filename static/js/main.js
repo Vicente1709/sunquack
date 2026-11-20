@@ -22,8 +22,21 @@ function setUser(name) {
   $("#btn-login").hidden = $("#btn-signin").hidden = logged;
   $("#btn-logout").hidden = !logged;
 }
-document.querySelectorAll("[data-open]").forEach((b) =>
-  b.addEventListener("click", () => document.getElementById(b.dataset.open).showModal()));
+const authDlg = $("#dlg-auth");
+function showPane(name, animate) {
+  document.querySelectorAll("#dlg-auth form").forEach((f) => {
+    const on = f.dataset.pane === name;
+    f.hidden = !on;
+    if (on && animate) { f.classList.remove("pane-in"); void f.offsetWidth; f.classList.add("pane-in"); }
+  });
+  const form = $(`#form-${name}`);
+  $(".msg", form).textContent = "";
+  const first = $("input", form); if (first) first.focus();
+}
+document.querySelectorAll("[data-auth]").forEach((b) =>
+  b.addEventListener("click", () => { authDlg.showModal(); showPane(b.dataset.auth, false); }));
+document.querySelectorAll("[data-swap]").forEach((b) =>
+  b.addEventListener("click", () => showPane(b.dataset.swap, true)));
 document.querySelectorAll("[data-close]").forEach((b) =>
   b.addEventListener("click", () => b.closest("dialog").close()));
 
@@ -55,15 +68,41 @@ document.querySelectorAll("form[data-api]").forEach((form) => {
 $("#btn-logout").addEventListener("click", async () => { await api("/api/logout"); setUser(null); loadBest(); });
 fetch("/api/me", { credentials: "same-origin" }).then((r) => r.json()).then((d) => setUser(d.user)).catch(() => {});
 
-/* ---------- interruptor gangorra ---------- */
-const sw = $("#gs-switch"), panel = $("#gs-panel");
-sw.addEventListener("click", () => {
-  const on = sw.getAttribute("aria-checked") !== "true";
-  sw.setAttribute("aria-checked", String(on));
-  panel.classList.toggle("open", on);
+/* ---------- interruptor gangorra + sequência da luminária ---------- */
+const sw = $("#gs-switch"), panel = $("#gs-panel"), lampEl = $("#lamp"), beam = $("#beam"), ledge = $("#ledge");
+const BEAM_TOP = 160; // y (px) onde o feixe nasce, junto à lâmpada
+let sceneTimer = 0, lit = false;
+
+function placeBeam() { // o feixe termina na prateleira, acompanhando-a enquanto ela se posiciona
+  const r = ledge.getBoundingClientRect(), w = $(".panel-inner", panel).getBoundingClientRect().width;
+  beam.style.height = Math.max(0, r.bottom - BEAM_TOP) + "px";
+  beam.style.width = Math.min(innerWidth * .94, Math.max(540, w * 1.5)) + "px";
+}
+function trackBeam(ms) {
+  const t0 = performance.now();
+  (function step() { placeBeam(); if (performance.now() - t0 < ms) requestAnimationFrame(step); })();
+}
+addEventListener("resize", () => lit && placeBeam());
+
+function setLit(on) {
+  lit = on;
+  clearTimeout(sceneTimer);
+  sw.setAttribute("aria-checked", String(on)); // estado único: símbolos, tecla e cena derivam dele
+  document.body.classList.toggle("lit", on);
   panel.inert = !on;
-  SFX.rocker(on);
-});
+  SFX.rocker(on); SFX.lamp(on);
+  if (on) {
+    lampEl.dataset.s = "on";
+    panel.classList.remove("settled"); panel.classList.add("open");
+    trackBeam(3200); Moths.start();
+    sceneTimer = setTimeout(() => panel.classList.add("settled"), 2700);
+  } else {
+    panel.classList.remove("open", "settled");
+    lampEl.dataset.s = "out"; trackBeam(1000); Moths.stop();
+    sceneTimer = setTimeout(() => { lampEl.dataset.s = "off"; }, 650);
+  }
+}
+sw.addEventListener("click", () => setLit(sw.getAttribute("aria-checked") !== "true"));
 
 /* ---------- jogo: card expande até a tela cheia ---------- */
 const screen = $("#game-screen"), cover = $("#cover-bg"), over = $("#game-over"), card = $("#card-duck");

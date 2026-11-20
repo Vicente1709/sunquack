@@ -13,6 +13,12 @@
 </head>
 <body>
   <div class="bg" aria-hidden="true"></div>
+  <div class="dim" id="dim" aria-hidden="true"></div>
+  <div class="lamp" id="lamp" data-s="off" aria-hidden="true">
+    <div class="beam" id="beam"></div>
+    <div class="lamp-body"><div class="cord"></div><div class="canopy"></div><div class="shade"></div><div class="halo"></div><div class="bulb"></div></div>
+    <canvas class="moths" id="moths" width="420" height="300"></canvas>
+  </div>
   <div class="intro" aria-hidden="true"><div class="sun"></div></div>
 
   <div id="page">
@@ -24,8 +30,8 @@
       <div class="auth enter e1">
         <span id="who" class="who" hidden></span>
         <button class="btn" id="btn-sound" aria-pressed="true">Som ligado</button>
-        <button class="btn" id="btn-login" data-open="dlg-login">Login</button>
-        <button class="btn btn-solid" id="btn-signin" data-open="dlg-signin">Sign In</button>
+        <button class="btn" id="btn-login" data-auth="login">Login</button>
+        <button class="btn btn-solid" id="btn-signin" data-auth="signin">Sign In</button>
         <button class="btn" id="btn-logout" hidden>Sair</button>
       </div>
     </header>
@@ -40,18 +46,23 @@
       </button>
 
       <div class="panel" id="gs-panel" inert>
-        <div class="panel-inner glass">
-          <section>
-            <h3>Jogos</h3>
-            <button class="card" id="card-duck">
-              <img src="{{ url_for('static', filename='img/duck-cover.svg') }}" alt="">
-              <span class="card-title">Yellow Duck River Run</span>
-            </button>
-          </section>
-          <section>
-            <h3>Sistemas</h3>
-            <div class="card card-soon"><span class="card-title">Em breve</span></div>
-          </section>
+        <div class="panel-inner">
+          <div class="shelf-row">
+            <section>
+              <h3>Jogos</h3>
+              <div class="slot">
+                <button class="card" id="card-duck">
+                  <img src="{{ url_for('static', filename='img/duck-cover.svg') }}" alt="">
+                  <span class="card-title">Yellow Duck River Run</span>
+                </button>
+              </div>
+            </section>
+            <section>
+              <h3>Sistemas</h3>
+              <div class="slot"><div class="card card-soon"><span class="card-title">Em breve</span></div></div>
+            </section>
+          </div>
+          <div class="ledge" id="ledge"></div>
         </div>
       </div>
     </main>
@@ -70,8 +81,8 @@
     </div>
   </div>
 
-  <dialog id="dlg-login" class="glass">
-    <form data-api="/api/login" autocomplete="on">
+  <dialog id="dlg-auth" class="glass">
+    <form id="form-login" data-api="/api/login" data-pane="login" autocomplete="on">
       <h3>Login</h3>
       <label>Usuário ou e-mail
         <input name="identifier" required maxlength="254" autocomplete="username"></label>
@@ -80,11 +91,9 @@
       <p class="msg" role="alert"></p>
       <div class="actions"><button type="button" class="btn" data-close>Cancelar</button>
       <button class="btn btn-solid">Entrar</button></div>
+      <p class="switch-line">Não tem conta? <button type="button" class="link" data-swap="signin">Cadastre-se</button></p>
     </form>
-  </dialog>
-
-  <dialog id="dlg-signin" class="glass">
-    <form data-api="/api/register" autocomplete="on">
+    <form id="form-signin" data-api="/api/register" data-pane="signin" autocomplete="on" hidden>
       <h3>Criar conta</h3>
       <label>Usuário
         <input name="username" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" autocomplete="username"></label>
@@ -95,11 +104,15 @@
       <p class="msg" role="alert"></p>
       <div class="actions"><button type="button" class="btn" data-close>Cancelar</button>
       <button class="btn btn-solid">Cadastrar</button></div>
+      <p class="switch-line">Já tem conta? <button type="button" class="link" data-swap="login">Entrar</button></p>
     </form>
   </dialog>
 
+  <footer class="sig"><span>Feito por Vicente Taube</span></footer>
+
   <script src="{{ url_for('static', filename='js/sfx.js') }}"></script>
   <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/moths.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

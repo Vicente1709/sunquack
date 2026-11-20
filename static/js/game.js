@@ -264,7 +264,7 @@ window.DuckRun = function (canvas, hooks) {
     ctx.beginPath(); ctx.roundRect(18, 16, 210, 62, 18); ctx.fill(); ctx.stroke();
     ctx.fillStyle = "#fff"; ctx.font = "700 26px Quicksand, sans-serif"; ctx.fillText("Pontos  " + score(), 34, 46);
     ctx.font = "600 16px Quicksand, sans-serif"; ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.fillText("Recorde  " + Math.max(best, score()), 34, 67);
-    if (s.t < 4 && !s.over) { ctx.textAlign = "center"; ctx.fillStyle = `rgba(255,255,255,${clamp(4 - s.t, 0, 1)})`; ctx.font = "600 18px Quicksand, sans-serif"; ctx.fillText("↑ / espaço pula · ↓ mergulha", W / 2, H - 24); }
+    if (s.t < 4 && !s.over) { ctx.textAlign = "center"; ctx.fillStyle = `rgba(255,255,255,${clamp(4 - s.t, 0, 1)})`; ctx.font = "600 18px Quicksand, sans-serif"; ctx.fillText("↑ / espaço pula · ↓ mergulha", W / 2, H - 56); }
     ctx.restore();
   }
 

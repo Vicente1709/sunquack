@@ -93,6 +93,13 @@ window.SFX = (function () {
     thud() { tone(130, 42, 0.18, "sine", 0.3); noise("bandpass", 500, 1, 0.1, 0.25); noise("highpass", 1800, 1, 0.04, 0.12, 0.02); },
     fall() { tone(760, 140, 0.55, "sine", 0.1); noise("lowpass", 2200, 0.5, 0.28, 0.12, 0.62); },
     over() { tone(330, 330, 0.22, "triangle", 0.07); tone(262, 262, 0.22, "triangle", 0.07, 0.2); tone(196, 196, 0.4, "triangle", 0.08, 0.4); },
+    lamp(on) {
+      if (on) {
+        tone(2200, 1800, 0.14, "sine", 0.035, 0.35); tone(98, 150, 1.1, "triangle", 0.05, 0.4); tone(660, 990, 0.5, "sine", 0.03, 0.9);
+        noise("bandpass", 900, 0.8, 0.6, 0.03, 1.0);
+        tone(523, 523, 0.3, "sine", 0.05, 1.7); tone(659, 659, 0.3, "sine", 0.05, 1.82); tone(784, 784, 0.5, "sine", 0.05, 1.94);
+      } else { tone(150, 70, 0.5, "triangle", 0.05); tone(1500, 900, 0.1, "sine", 0.03, 0.3); }
+    },
     ambienceStart, ambience, ambienceStop,
     setMuted(m) {
       muted = !!m;
